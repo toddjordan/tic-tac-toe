@@ -3,7 +3,15 @@
 
 describe('Tic tac toe player',function() {
   var player, game, knowledge;
-
+  
+  var initializeTicTacToe = function(gameboard) {
+    game.initializeGameboard(gameboard);
+    for (var i=0;i<gameboard.length;i++) {
+      if (gameboard[i]===TicTacToe.X || gameboard[i]===TicTacToe.O) {
+        knowledge.handlePlay(gameboard[i], i);
+      }
+    }
+  };
 
   beforeEach(function() {
     game = TicTacToe();
@@ -13,36 +21,25 @@ describe('Tic tac toe player',function() {
   });
 
   it('should block a win', function() {
-    game.initializeGameboard([TicTacToe.O, TicTacToe.O,'','','','','','','']);
-    knowledge.handlePlay(TicTacToe.O, 0);
-    knowledge.handlePlay(TicTacToe.O, 1);
+    initializeTicTacToe([TicTacToe.O, TicTacToe.O,'','','','','','','']);
     player.takeTurn();
     expect(game.valueAt(2)).toBe(TicTacToe.X);
   });
 
   it('should go for top left corner if center is taken', function() {
-    game.initializeGameboard(['','','','',TicTacToe.O,'','','','']);
-    knowledge.handlePlay(TicTacToe.O,4);
+    initializeTicTacToe(['','','','',TicTacToe.O,'','','','']);
     player.takeTurn();
     expect(game.valueAt(0)).toBe(TicTacToe.X);
   });
 
   it('should go for top right if center and bottom left are taken', function() {
-    game.initializeGameboard([TicTacToe.X,'','','',TicTacToe.O,'','','',TicTacToe.O]);
-    knowledge.handlePlay(TicTacToe.O,4);
-    knowledge.handlePlay(TicTacToe.O,8);
-    knowledge.handlePlay(TicTacToe.X,0);
+    initializeTicTacToe([TicTacToe.X,'','','',TicTacToe.O,'','','',TicTacToe.O]);
     player.takeTurn();
     expect(game.valueAt(2)).toBe(TicTacToe.X);
   });
 
   it('should go for bottom left if center and top left and right are taken', function() {
-    game.initializeGameboard([TicTacToe.X,'',TicTacToe.X,'',TicTacToe.O,TicTacToe.O,'','',TicTacToe.O]);
-    knowledge.handlePlay(TicTacToe.O,4);
-    knowledge.handlePlay(TicTacToe.O,5);
-    knowledge.handlePlay(TicTacToe.O,8);
-    knowledge.handlePlay(TicTacToe.X,0);
-    knowledge.handlePlay(TicTacToe.X,2);
+    initializeTicTacToe([TicTacToe.X,'',TicTacToe.X,'',TicTacToe.O,TicTacToe.O,'','',TicTacToe.O]);
     player.takeTurn();
     expect(game.valueAt(3)).toBe(TicTacToe.X);
   });

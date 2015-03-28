@@ -30,6 +30,10 @@ function WinningCombinations(rowQuery) {
         toRemove.push(i);
       }
     }
+    removeAvailableCombinations(toRemove);
+  };
+
+  var removeAvailableCombinations = function(toRemove) {
     for (var j=0;j<toRemove.length;j++){
       availableCombos.splice(toRemove[j],1);
     }
@@ -40,11 +44,10 @@ function WinningCombinations(rowQuery) {
       var foundIndex = potentialWinners[player][i].indexOf(index);
       if (foundIndex>-1) {
         potentialWinners[player][i][foundIndex] = player;
-        if (rowQuery.allMarks(player,potentialWinners[player][i])) {
+        if (rowQuery.hasAllMarks(player,potentialWinners[player][i])) {
           return true;
         }
       }
-
     }
     return false;
   };
@@ -66,13 +69,11 @@ function WinningCombinations(rowQuery) {
     isOpponentAboutToWin:function(player) {
       var opposingPlayer = getOpponent(player);
       for(var i=0;i<potentialWinners[opposingPlayer].length;i++){
-        if (rowQuery.twoMarks(opposingPlayer,potentialWinners[opposingPlayer][i]) && 
-            rowQuery.noMarks(player,potentialWinners[opposingPlayer][i])){
-          console.log('about to win');
+        if (rowQuery.hasTwoMarks(opposingPlayer,potentialWinners[opposingPlayer][i]) && 
+            rowQuery.hasNoMarks(player,potentialWinners[opposingPlayer][i])){
           return true;
         }
       }
-      console.log('not about to win');
       return false;
     },
 
@@ -80,13 +81,12 @@ function WinningCombinations(rowQuery) {
     spotToBlock:function(player) {
       var opposingPlayer = getOpponent(player);
       for(var i=0;i<potentialWinners[opposingPlayer].length;i++){
-        if (rowQuery.twoMarks(opposingPlayer,potentialWinners[opposingPlayer][i])){
+        if (rowQuery.hasTwoMarks(opposingPlayer,potentialWinners[opposingPlayer][i])){
           return rowQuery.firstAvailableSpot(opposingPlayer, potentialWinners[opposingPlayer][i]);
         }
         return -1;
       }
     }
-    
   };
 }
 
