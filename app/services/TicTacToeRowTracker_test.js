@@ -1,12 +1,11 @@
 'use strict';
-/* global WinningCombinations,RowQuery */
+/* global TicTacToeRowTracker,RowQuery */
 
 describe('winning combinations', function() {
 var winningCombos;
 
 beforeEach(function() {
-  console.log('before each!');
-  winningCombos = WinningCombinations(RowQuery());
+  winningCombos = TicTacToeRowTracker(RowQuery());
 });
 
 it('should identify a winning combination', function() {

@@ -1,10 +1,10 @@
 'use strict';
-TicTacToe.CENTER = 4;
-TicTacToe.CORNERS = [0,2,6,8];
-TicTacToe.X = 'x';
-TicTacToe.O = 'o';
+TicTacToeGameBoard.CENTER = 4;
+TicTacToeGameBoard.CORNERS = [0,2,6,8];
+TicTacToeGameBoard.X = 'x';
+TicTacToeGameBoard.O = 'o';
 
-function TicTacToe() {
+function TicTacToeGameBoard() {
 
   var gameboard = [];
 
@@ -20,7 +20,7 @@ function TicTacToe() {
     },
 
     isSpotTaken: function(index) {
-      return gameboard[index] === TicTacToe.X || gameboard[index] === TicTacToe.O;
+      return gameboard[index] === TicTacToeGameBoard.X || gameboard[index] === TicTacToeGameBoard.O;
     },
 
     valueAt: function(index) {
@@ -33,6 +33,10 @@ function TicTacToe() {
 
     printGameboard:function() {
       return gameboard.toString();
+    },
+
+    currentBoardState:function() {
+      return gameboard.slice();
     }
   };
 }

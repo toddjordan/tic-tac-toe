@@ -1,11 +1,9 @@
 'use strict';
-/* global TicTacToe */
+/* global TicTacToeGameBoard */
 
-function WinningCombinations(rowQuery) {
+function TicTacToeRowTracker(rowQuery) {
   //private variables
-  var potentialWinners = {};
-  potentialWinners[TicTacToe.X] = [];
-  potentialWinners[TicTacToe.O] = [];
+  var winner;
 
   var availableCombos= [
     [0,1,2],
@@ -19,6 +17,18 @@ function WinningCombinations(rowQuery) {
   ]; 
 
   //private methods
+  var initializeKnowledge = function() {
+
+    winner = null;
+    var potentialWinners = {};
+    potentialWinners[TicTacToeGameBoard.X] = [];
+    potentialWinners[TicTacToeGameBoard.O] = [];
+    return potentialWinners;
+
+  };
+
+  var potentialWinners = initializeKnowledge();
+
 
   var updateAvailableCombinations= function(player,index) {
     var toRemove = [];
@@ -45,6 +55,7 @@ function WinningCombinations(rowQuery) {
       if (foundIndex>-1) {
         potentialWinners[player][i][foundIndex] = player;
         if (rowQuery.hasAllMarks(player,potentialWinners[player][i])) {
+          winner = player;
           return true;
         }
       }
@@ -53,18 +64,23 @@ function WinningCombinations(rowQuery) {
   };
 
   var getOpponent = function(player) {
-    return player===TicTacToe.X?TicTacToe.O:TicTacToe.X;
+    return player===TicTacToeGameBoard.X?TicTacToeGameBoard.O:TicTacToeGameBoard.X;
   };
+
+
 
 
   return {
     //public methods
 
+    reset:function() {
+      initializeKnowledge();
+    },
+
     handlePlay:function(player,index) {
       updateAvailableCombinations(player, index);
       return updateOwnedCombinations(player, index);
     },
-
 
     isOpponentAboutToWin:function(player) {
       var opposingPlayer = getOpponent(player);
@@ -86,6 +102,20 @@ function WinningCombinations(rowQuery) {
         }
         return -1;
       }
+    },
+
+    currentGameState: function() {
+      if (winner) {
+        return {
+          isOver: true,
+          winner: winner
+        };
+      } else {
+        return {
+          isOver: false
+        };
+      }
+      
     }
   };
 }

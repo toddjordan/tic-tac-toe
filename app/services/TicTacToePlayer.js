@@ -1,28 +1,40 @@
 'use strict';
-/*global TicTacToe*/
+/*global TicTacToeGameBoard*/
 
-function TicTacToePlayer(game, knowledge, playerType) {
+function TicTacToePlayer(game, rowTracker) {
+  
+  var playerType = TicTacToeGameBoard.X;
+  
   var playCorner = function() {
-    for (var i=0;i<TicTacToe.CORNERS.length;i++){
-      if(!game.isSpotTaken(TicTacToe.CORNERS[i])) {
-        game.play(TicTacToe.CORNERS[i], playerType);
+    var index = -1;
+    for (var i=0;i<TicTacToeGameBoard.CORNERS.length;i++){
+      if(!game.isSpotTaken(TicTacToeGameBoard.CORNERS[i])) {
+        index = TicTacToeGameBoard.CORNERS[i];
+        game.play(index, playerType);
         break;
       }
     }
+    return index;
   };
 
   return {
+    initializePlayer:function(playerMarker) {
+      playerType = playerMarker;
+    },
     takeTurn:function() {
-      console.log('taking turn');
-      if(knowledge.isOpponentAboutToWin(playerType)) {
-        console.log('opponent is about to win');
-        game.play(knowledge.spotToBlock(playerType), playerType);
-      } else if(!game.isSpotTaken(TicTacToe.CENTER)){
-        game.play(TicTacToe.CENTER,playerType);
+      var index;
+      if(rowTracker.isOpponentAboutToWin(playerType)) {
+        console.log('opponent is about to win, blocking...');
+        index = rowTracker.spotToBlock(playerType);
+        game.play(index, playerType);
+      } else if(!game.isSpotTaken(TicTacToeGameBoard.CENTER)){
+        index = TicTacToeGameBoard.CENTER;
+        game.play(index,playerType);
       } else {
-        playCorner();
+        index = playCorner();
       }
       console.log('gameboard: ' + game.printGameboard());
+      return index;
     }
   };
 }
