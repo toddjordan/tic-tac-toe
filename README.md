@@ -2,7 +2,7 @@
 A simple web-based tic-tac-toe app that you can't win:-)
 
 ## Screenshot
-![alt-text](https://github.com/toddjordan/tic-tac-toe/blob/master/screenshots/tictactoeScreenshot.png "boo-ya"
+![alt-text](https://github.com/toddjordan/tic-tac-toe/blob/master/screenshots/tictactoeScreenshot.png "boo-ya")
 
 ## Setup
 1. Install NodeJS
