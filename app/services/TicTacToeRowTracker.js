@@ -4,31 +4,28 @@
 function TicTacToeRowTracker(rowQuery) {
   //private variables
   var winner;
-
-  var availableCombos= [
-    [0,1,2],
-    [3,4,5],
-    [6,7,8],
-    [0,3,6],
-    [1,4,7],
-    [2,5,8],
-    [0,4,8],
-    [6,4,2]
-  ]; 
+  var availableCombos; 
+  var potentialWinners;
 
   //private methods
   var initializeKnowledge = function() {
-
+    availableCombos = [
+      [0,1,2],
+      [3,4,5],
+      [6,7,8],
+      [0,3,6],
+      [1,4,7],
+      [2,5,8],
+      [0,4,8],
+      [6,4,2]
+    ]; 
     winner = null;
-    var potentialWinners = {};
+    potentialWinners = {};
     potentialWinners[TicTacToeGameBoard.X] = [];
     potentialWinners[TicTacToeGameBoard.O] = [];
-    return potentialWinners;
-
   };
-
-  var potentialWinners = initializeKnowledge();
-
+  
+  initializeKnowledge();
 
   var updateAvailableCombinations= function(player,index) {
     var toRemove = [];
@@ -37,15 +34,16 @@ function TicTacToeRowTracker(rowQuery) {
       if(foundIndex>-1) {
         availableCombos[i][foundIndex] = player;
         potentialWinners[player].push(availableCombos[i]);
-        toRemove.push(i);
+        toRemove.push(availableCombos[i]);
       }
     }
-    removeAvailableCombinations(toRemove);
+    removeFromArray(toRemove, availableCombos);
   };
 
-  var removeAvailableCombinations = function(toRemove) {
+  var removeFromArray = function(toRemove, arrayToRemoveFrom) {
     for (var j=0;j<toRemove.length;j++){
-      availableCombos.splice(toRemove[j],1);
+      var indexToRemove = arrayToRemoveFrom.indexOf(toRemove[j]);
+      arrayToRemoveFrom.splice(indexToRemove,1);
     }
   };
 
@@ -63,12 +61,21 @@ function TicTacToeRowTracker(rowQuery) {
     return false;
   };
 
+  var updateOpponentOwnedCombinations=function(player, index) {
+    var opposingPlayer = getOpponent(player);
+    var toRemove = [];
+    for(var i=0;i<potentialWinners[opposingPlayer].length;i++) {
+      var foundIndex = potentialWinners[opposingPlayer][i].indexOf(index);
+      if (foundIndex>-1) {
+        toRemove.push(potentialWinners[opposingPlayer][i]);
+      }
+    }
+    removeFromArray(toRemove, potentialWinners[opposingPlayer]);
+  };
+
   var getOpponent = function(player) {
     return player===TicTacToeGameBoard.X?TicTacToeGameBoard.O:TicTacToeGameBoard.X;
   };
-
-
-
 
   return {
     //public methods
@@ -78,15 +85,19 @@ function TicTacToeRowTracker(rowQuery) {
     },
 
     handlePlay:function(player,index) {
+      console.log('handle play: '+ index +':'+ player);
       updateAvailableCombinations(player, index);
+      updateOpponentOwnedCombinations(player, index);
       return updateOwnedCombinations(player, index);
     },
 
     isOpponentAboutToWin:function(player) {
-      var opposingPlayer = getOpponent(player);
-      for(var i=0;i<potentialWinners[opposingPlayer].length;i++){
-        if (rowQuery.hasTwoMarks(opposingPlayer,potentialWinners[opposingPlayer][i]) && 
-            rowQuery.hasNoMarks(player,potentialWinners[opposingPlayer][i])){
+      return this.amIAboutToWin(getOpponent(player));
+    },
+
+    amIAboutToWin:function(player) {
+      for(var i=0;i<potentialWinners[player].length;i++){
+        if (rowQuery.hasTwoMarks(player,potentialWinners[player][i])){
           return true;
         }
       }
@@ -96,12 +107,16 @@ function TicTacToeRowTracker(rowQuery) {
 
     spotToBlock:function(player) {
       var opposingPlayer = getOpponent(player);
-      for(var i=0;i<potentialWinners[opposingPlayer].length;i++){
-        if (rowQuery.hasTwoMarks(opposingPlayer,potentialWinners[opposingPlayer][i])){
-          return rowQuery.firstAvailableSpot(opposingPlayer, potentialWinners[opposingPlayer][i]);
+      return this.spotToWin(opposingPlayer);
+    },
+
+    spotToWin:function(player) {
+      for(var i=0;i<potentialWinners[player].length;i++){
+        if (rowQuery.hasTwoMarks(player,potentialWinners[player][i])){
+          return rowQuery.firstAvailableSpot(player, potentialWinners[player][i]);
         }
-        return -1;
       }
+      return -1;      
     },
 
     currentGameState: function() {

@@ -1,8 +1,8 @@
 'use strict';
-/* global TicTacToeGameBoard, TicTacToePlayer, TicTacToeRowTracker, RowQuery */
+/* global TicTacToeGameBoard, TicTacToePlayer, TicTacToeRowTracker, RowQuery, TicTacToeForkDefense */
 
 describe('Tic tac toe player',function() {
-  var player, game, knowledge;
+  var player, game, knowledge, forkDefense;
   
   var initializeTicTacToe = function(gameboard) {
     game.initializeGameboard(gameboard);
@@ -15,13 +15,20 @@ describe('Tic tac toe player',function() {
 
   beforeEach(function() {
     game = TicTacToeGameBoard();
+    forkDefense = TicTacToeForkDefense(game);
     knowledge = TicTacToeRowTracker(RowQuery());
-    player = TicTacToePlayer(game,knowledge);
+    player = TicTacToePlayer(game,knowledge, forkDefense);
     player.initializePlayer(TicTacToeGameBoard.X);
   });
 
   it('should block a win', function() {
     initializeTicTacToe([TicTacToeGameBoard.O, TicTacToeGameBoard.O,'','','','','','','']);
+    player.takeTurn();
+    expect(game.valueAt(2)).toBe(TicTacToeGameBoard.X);
+  });
+
+  it('should try to win', function() {
+    initializeTicTacToe([TicTacToeGameBoard.X, TicTacToeGameBoard.X,'','','','','','','']);
     player.takeTurn();
     expect(game.valueAt(2)).toBe(TicTacToeGameBoard.X);
   });
@@ -38,14 +45,16 @@ describe('Tic tac toe player',function() {
     expect(game.valueAt(2)).toBe(TicTacToeGameBoard.X);
   });
 
-  it('should go for bottom left if center and top left and right are taken', function() {
-    initializeTicTacToe([TicTacToeGameBoard.X,'',TicTacToeGameBoard.X,'',TicTacToeGameBoard.O,TicTacToeGameBoard.O,'','',TicTacToeGameBoard.O]);
+  it('should prevent a fork', function() {
+    initializeTicTacToe([TicTacToeGameBoard.O,'','','',TicTacToeGameBoard.X,'','',TicTacToeGameBoard.O,'']);
     player.takeTurn();
-    expect(game.valueAt(3)).toBe(TicTacToeGameBoard.X);
+    expect(game.valueAt(6)).toBe(TicTacToeGameBoard.X);
   });
 
   it('should take center spot if available', function() {
     player.takeTurn();
     expect(game.valueAt(TicTacToeGameBoard.CENTER)).toBe(TicTacToeGameBoard.X);
   });
+
+
 });

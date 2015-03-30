@@ -1,39 +1,48 @@
 'use strict';
 /*global TicTacToeGameBoard*/
 
-function TicTacToePlayer(game, rowTracker) {
+function TicTacToePlayer(game, rowTracker, forkDefense) {
   
   var playerType = TicTacToeGameBoard.X;
   
-  var playCorner = function() {
-    var index = -1;
-    for (var i=0;i<TicTacToeGameBoard.CORNERS.length;i++){
-      if(!game.isSpotTaken(TicTacToeGameBoard.CORNERS[i])) {
-        index = TicTacToeGameBoard.CORNERS[i];
-        game.play(index, playerType);
-        break;
-      }
-    }
-    return index;
+  var getOpponent = function(player) {
+    return player===TicTacToeGameBoard.X?TicTacToeGameBoard.O:TicTacToeGameBoard.X;
   };
 
+  
   return {
     initializePlayer:function(playerMarker) {
       playerType = playerMarker;
     },
     takeTurn:function() {
       var index;
-      if(rowTracker.isOpponentAboutToWin(playerType)) {
+      if(rowTracker.amIAboutToWin(playerType)){
+        console.log('ftw!');
+        index = rowTracker.spotToWin(playerType);
+        game.play(index, playerType);
+      } else if(rowTracker.isOpponentAboutToWin(playerType)) {
         console.log('opponent is about to win, blocking...');
         index = rowTracker.spotToBlock(playerType);
         game.play(index, playerType);
+      } else if (forkDefense.indexToDefend(getOpponent(playerType))>-1) {
+        console.log('fork defense!');
+        index = forkDefense.indexToDefend(getOpponent(playerType));
+        game.play(index, playerType);
       } else if(!game.isSpotTaken(TicTacToeGameBoard.CENTER)){
+        console.log('picking center');
         index = TicTacToeGameBoard.CENTER;
         game.play(index,playerType);
+      } else if (game.isCornerAvailable()){
+        console.log('playing corner');
+        index = game.firstAvailableCorner();
+        game.play(index, playerType);
       } else {
-        index = playCorner();
+        console.log('playing anything');
+        index = game.firstAvailableSpot();
+        game.play(index,playerType);
       }
       console.log('gameboard: ' + game.printGameboard());
+      console.log('returning index '+index);
       return index;
     }
   };

@@ -24,12 +24,17 @@ function TicTacToeEngine(gameBoard, rowTracker, computerPlayer) {
     makeAMove:function(index, playerMarker) {
       gameBoard.play(index, playerMarker);
       var playerWon = rowTracker.handlePlay(playerMarker, index);
-      if (!playerWon) {
+      if (!playerWon && !gameBoard.isGameboardFull()) {
         counterMove(playerMarker);
       } 
+      var gamestatus = rowTracker.currentGameState();
+      if (!gamestatus.isOver && gameBoard.isGameboardFull()) {
+        gamestatus.isOver = true;
+        gamestatus.winner = 'Tie';
+      }
       return {
         gameboard:  gameBoard.currentBoardState(),
-        gamestatus: rowTracker.currentGameState()
+        gamestatus: gamestatus
       };
     },
         

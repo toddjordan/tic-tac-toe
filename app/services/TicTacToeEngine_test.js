@@ -1,5 +1,5 @@
 'use strict';
-/* global TicTacToeGameBoard, TicTacToeRowTracker, TicTacToePlayer, RowQuery, TicTacToeEngine */
+/* global TicTacToeGameBoard, TicTacToeRowTracker, TicTacToePlayer, RowQuery, TicTacToeEngine, TicTacToeForkDefense */
 
 describe('The tic tac toe engine', function() {
 
@@ -18,7 +18,7 @@ describe('The tic tac toe engine', function() {
   beforeEach(function() {
     gameBoard = TicTacToeGameBoard();
     rowTracker = TicTacToeRowTracker(RowQuery());
-    computerPlayer = TicTacToePlayer(gameBoard, rowTracker);
+    computerPlayer = TicTacToePlayer(gameBoard, rowTracker, TicTacToeForkDefense(gameBoard));
     engine = TicTacToeEngine(gameBoard, rowTracker, computerPlayer);
   });
 
